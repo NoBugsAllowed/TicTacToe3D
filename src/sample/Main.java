@@ -19,9 +19,13 @@ public class Main extends Application {
     private static final double STICK_H = 6;
     private static final double STICK_DIST = 4;
     private static final double BALL_RADIUS = 1;
-    private Rotate yRotate;
+    private Rotate yCameraRotate;
+    private Rotate xCameraRotate;
+    private Translate cameraTranslate;
     private double lastMouseX;
-    private double gameAreaAngle = 20;
+    private double lastMouseY;
+    private double yCameraAngle = 20;
+    private double xCameraAngle = -30;
 
     private Parent createContent() {
         // Sticks
@@ -46,14 +50,16 @@ public class Main extends Application {
         ball2.setTranslateY(-3*BALL_RADIUS);
 
         Translate pivot = new Translate();
-        yRotate = new Rotate(gameAreaAngle, Rotate.Y_AXIS);
+        yCameraRotate = new Rotate(yCameraAngle, Rotate.Y_AXIS);
+        xCameraRotate = new Rotate(xCameraAngle, Rotate.X_AXIS);
+        cameraTranslate = new Translate(0, 0, -35);
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
                 pivot,
-                yRotate,
-                new Rotate(-30, Rotate.X_AXIS),
-                new Translate(0, 0, -35));
+                yCameraRotate,
+                xCameraRotate,
+                cameraTranslate);
 
         // Build the Scene Graph
         Group root = new Group();
@@ -80,14 +86,25 @@ public class Main extends Application {
 
         scene.setOnMousePressed(event->{
             lastMouseX = event.getSceneX();
-            gameAreaAngle = yRotate.getAngle();
+            lastMouseY = event.getSceneY();
+            yCameraAngle = yCameraRotate.getAngle();
+            xCameraAngle = xCameraRotate.getAngle();
         });
         scene.setOnMouseReleased(event->{
-            gameAreaAngle = yRotate.getAngle();
+            yCameraAngle = yCameraRotate.getAngle();
+            xCameraAngle = xCameraRotate.getAngle();
         });
         scene.setOnMouseDragged(event->{
-            double da = (event.getSceneX()-lastMouseX)*180/scene.getWidth();
-            yRotate.setAngle(gameAreaAngle+da);
+            double dx = (event.getSceneX()-lastMouseX)*180/scene.getWidth();
+            double dy = (event.getSceneY()-lastMouseY)*70/scene.getHeight();
+            yCameraRotate.setAngle(yCameraAngle + dx);
+            xCameraRotate.setAngle(xCameraAngle - dy);
+        });
+        scene.setOnScroll(event->{
+            if(event.getDeltaY()>0)
+                cameraTranslate.setZ(cameraTranslate.getZ()+1);
+            else
+                cameraTranslate.setZ(cameraTranslate.getZ()-1);
         });
 
         primaryStage.setScene(scene);
