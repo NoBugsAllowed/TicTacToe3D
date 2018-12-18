@@ -4,10 +4,12 @@ import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
@@ -27,6 +29,14 @@ public class Main extends Application {
     private double yCameraAngle = 20;
     private double xCameraAngle = -30;
 
+    private void addBall(Group group, int i, int j, int k, Color color) {
+        Sphere ball = new Sphere(BALL_RADIUS);
+        ball.setMaterial(new PhongMaterial(color));
+        ball.setDrawMode(DrawMode.FILL);
+        ball.getTransforms().add(new Translate((i-1)*STICK_DIST,-(k*2+1)*BALL_RADIUS,(j-1)*STICK_DIST));
+        group.getChildren().add(ball);
+    }
+
     private Parent createContent() {
         // Sticks
         List<Cylinder> sticks = new ArrayList<>(9);
@@ -39,15 +49,9 @@ public class Main extends Application {
                 stick.getTransforms().add(new Translate(i*STICK_DIST,-STICK_H/2,j*STICK_DIST));
                 sticks.add(stick);
             }
-
-        Sphere ball = new Sphere(BALL_RADIUS);
-        ball.setMaterial(new PhongMaterial(Color.RED));
-        ball.setDrawMode(DrawMode.FILL);
-        ball.setTranslateY(-BALL_RADIUS);
-        Sphere ball2 = new Sphere(BALL_RADIUS);
-        ball2.setMaterial(new PhongMaterial(Color.BLUE));
-        ball2.setDrawMode(DrawMode.FILL);
-        ball2.setTranslateY(-3*BALL_RADIUS);
+        Box surface = new Box(3*STICK_DIST,0.5,3*STICK_DIST);
+        surface.setMaterial(new PhongMaterial(Color.BROWN));
+        surface.setDrawMode(DrawMode.FILL);
 
         Translate pivot = new Translate();
         yCameraRotate = new Rotate(yCameraAngle, Rotate.Y_AXIS);
@@ -64,9 +68,13 @@ public class Main extends Application {
         // Build the Scene Graph
         Group root = new Group();
         root.getChildren().add(camera);
-        root.getChildren().add(ball);
-        root.getChildren().add(ball2);
         root.getChildren().addAll(sticks);
+        root.getChildren().addAll(surface);
+
+        // Tymczasowe
+        addBall(root,1,1,0,Color.RED);
+        addBall(root,0,1,0,Color.BLUE);
+        addBall(root,0,1,1,Color.BLUE);
 
         // Use a SubScene
         SubScene subScene = new SubScene(root, 800,500, true, SceneAntialiasing.BALANCED);
