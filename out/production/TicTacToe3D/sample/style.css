@@ -1,0 +1,14 @@
+*{
+    -fx-base: #3399ff;
+}
+
+.menuButton {
+        -fx-text-fill: #FFE17F;
+        -fx-font-weight: bold;
+        -fx-font-size: 18px;
+        -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);
+        -fx-background-size: 30 30;
+        -fx-background-position: right center;
+        -fx-background-insets: -5;
+        -fx-background-repeat: no-repeat;
+}

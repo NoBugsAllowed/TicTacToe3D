@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -13,6 +14,7 @@ import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,35 +88,43 @@ public class Main extends Application {
         return group;
     }
 
+    private Parent createStartMenu() {
+        Group root = new Group();
+        return root;
+    }
+
     @Override
-    public void start(Stage primaryStage) {
-        //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        Scene scene = new Scene(createContent());
+    public void start(Stage primaryStage) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("start_menu.fxml"));
+        Scene scene = new Scene(root,400,600);
+        //Scene scene = new Scene(createContent());
+
+//        scene.setOnMousePressed(event->{
+//            lastMouseX = event.getSceneX();
+//            lastMouseY = event.getSceneY();
+//            yCameraAngle = yCameraRotate.getAngle();
+//            xCameraAngle = xCameraRotate.getAngle();
+//        });
+//        scene.setOnMouseReleased(event->{
+//            yCameraAngle = yCameraRotate.getAngle();
+//            xCameraAngle = xCameraRotate.getAngle();
+//        });
+//        scene.setOnMouseDragged(event->{
+//            double dx = (event.getSceneX()-lastMouseX)*180/scene.getWidth();
+//            double dy = (event.getSceneY()-lastMouseY)*70/scene.getHeight();
+//            yCameraRotate.setAngle(yCameraAngle + dx);
+//            xCameraRotate.setAngle(xCameraAngle - dy);
+//        });
+//        scene.setOnScroll(event->{
+//            if(event.getDeltaY()>0)
+//                cameraTranslate.setZ(cameraTranslate.getZ()+1);
+//            else
+//                cameraTranslate.setZ(cameraTranslate.getZ()-1);
+//        });
+
         primaryStage.setTitle("Tic Tac Toe");
-
-        scene.setOnMousePressed(event->{
-            lastMouseX = event.getSceneX();
-            lastMouseY = event.getSceneY();
-            yCameraAngle = yCameraRotate.getAngle();
-            xCameraAngle = xCameraRotate.getAngle();
-        });
-        scene.setOnMouseReleased(event->{
-            yCameraAngle = yCameraRotate.getAngle();
-            xCameraAngle = xCameraRotate.getAngle();
-        });
-        scene.setOnMouseDragged(event->{
-            double dx = (event.getSceneX()-lastMouseX)*180/scene.getWidth();
-            double dy = (event.getSceneY()-lastMouseY)*70/scene.getHeight();
-            yCameraRotate.setAngle(yCameraAngle + dx);
-            xCameraRotate.setAngle(xCameraAngle - dy);
-        });
-        scene.setOnScroll(event->{
-            if(event.getDeltaY()>0)
-                cameraTranslate.setZ(cameraTranslate.getZ()+1);
-            else
-                cameraTranslate.setZ(cameraTranslate.getZ()-1);
-        });
-
+        primaryStage.setMinWidth(320);
+        primaryStage.setMinHeight(400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
