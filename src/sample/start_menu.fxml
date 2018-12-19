@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?scenebuilder-classpath-element ?>
+<BorderPane prefHeight="212.0" prefWidth="151.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Main">
+    <padding>
+        <Insets left="20" right="20"/>
+    </padding>
+    <center>
+        <VBox alignment="CENTER" spacing="30">
+            <GridPane alignment="CENTER" hgap="20" vgap="5">
+                <Label styleClass="menuLabel" text="First player" GridPane.halignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="cbFirstColor" GridPane.halignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label styleClass="menuLabel" text="Second player" GridPane.halignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="cbSecondColor" GridPane.halignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+            <Button prefWidth="300"
+                    style="-fx-background-image: url(&quot;sample/icons/player.png&quot;);" styleClass="menuButton"
+                    text="Player vs Player" fx:id="btnPvP"/>
+            <Button fx:id="btnPvAIEasy" prefWidth="300"
+                    style="-fx-background-image: url(&quot;sample/icons/ai.png&quot;);" styleClass="menuButton"
+                    text="Player vs AI (easy)"/>
+            <Button fx:id="btnPvAIHard" prefWidth="300"
+                    style="-fx-background-image: url(&quot;sample/icons/ai.png&quot;);" styleClass="menuButton"
+                    text="Player vs AI (hard)"/>
+        </VBox>
+    </center>
+</BorderPane>

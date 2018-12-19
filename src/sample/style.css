@@ -1,0 +1,33 @@
+*{
+    -fx-base: #248F61;
+}
+
+.menuLabel {
+                -fx-text-fill: #903b12;
+                -fx-font-weight: bold;
+                -fx-font-size: 14px;
+}
+
+.menuButton {
+        -fx-background-color:
+                linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+                #9d4024,
+                #d86e3a,
+                radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
+        -fx-text-fill: #FFE17F;
+        -fx-font-weight: bold;
+        -fx-font-size: 18px;
+        -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);
+        -fx-background-size: 30 30;
+        -fx-background-position: right center;
+        -fx-background-insets: -5;
+        -fx-background-repeat: no-repeat;
+}
+
+.menuButton:hover {
+        -fx-background-color:
+                linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+                #9d4024,
+                #d86e3a,
+                radial-gradient(center 50% 50%, radius 100%, #ea7f4b, #c54e2c);
+}
