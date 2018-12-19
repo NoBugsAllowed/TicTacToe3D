@@ -1,6 +1,10 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.scene.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -33,11 +37,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class Main extends Application {
     private static final double STICK_RADIUS = 0.2;
     private static final double STICK_H = 6;
     private static final double STICK_DIST = 4;
     private static final double BALL_RADIUS = 1;
+    private static final Color COLOR_1 = Color.RED;
+    private static final Color COLOR_2 = Color.AQUA;
+    private Color currentColor = COLOR_1;
     private Stage window;
     public ComboBox cbFirstColor;
     private Rotate yCameraRotate;
@@ -58,15 +69,45 @@ public class Main extends Application {
 
     private Scene createGameArea() {
         // Sticks
-        List<Cylinder> sticks = new ArrayList<>(9);
+        Group root = new Group();
+        Cylinder[] sticks = new Cylinder[9];
+        int[] count = new int[9];
+        Sphere[] balls = new Sphere[27];
         for (int i = -1; i < 2; i++)
-            for (int j = -1; j < 2; j++) {
-                Cylinder stick = new Cylinder(STICK_RADIUS, STICK_H);
+            for (int j=-1;j<2;j++)
+            {
+                Cylinder stick = new Cylinder(STICK_RADIUS,STICK_H);
                 stick.setMaterial(new PhongMaterial(Color.GRAY));
                 stick.setDrawMode(DrawMode.FILL);
-                stick.getTransforms().add(new Translate(i * STICK_DIST, -STICK_H / 2, j * STICK_DIST));
-                sticks.add(stick);
+                //stick.getTransforms().add(new Translate(i*STICK_DIST,-STICK_H/2,j*STICK_DIST));
+                stick.setTranslateX(i*STICK_DIST);
+                stick.setTranslateY(-STICK_H/2);
+                stick.setTranslateZ(j*STICK_DIST);
+                stick.setOnMouseClicked(event->{
+                    double I = stick.getTranslateX()/STICK_DIST;
+                    double J = stick.getTranslateZ()/STICK_DIST;
+                    int k = (int)((I+1)+(J+1)*3);
+                    double y=0;
+                    if(count[k]==3) return;
+                    if(count[k]==0) y=-BALL_RADIUS;
+                    if(count[k]==1) y=-3*BALL_RADIUS;
+                    if(count[k]==2) y=-5*BALL_RADIUS;
+
+                    Sphere ball = new Sphere(BALL_RADIUS);
+                    ball.setMaterial(new PhongMaterial(currentColor));
+                    ball.setDrawMode(DrawMode.FILL);
+                    ball.setTranslateX(stick.getTranslateX());
+                    ball.setTranslateZ(stick.getTranslateZ());
+                    ball.setTranslateY(y);
+                    balls[count[k]*9 + k] = ball;
+                    root.getChildren().add(ball);
+                    count[k]++;
+                    currentColor = currentColor==COLOR_1?COLOR_2:COLOR_1;
+                });
+                sticks[(i+1)+(j+1)*3] = stick;
+
             }
+      
         Box surface = new Box(3 * STICK_DIST, 0.5, 3 * STICK_DIST);
         surface.setMaterial(new PhongMaterial(Color.BROWN));
         surface.setDrawMode(DrawMode.FILL);
@@ -89,11 +130,6 @@ public class Main extends Application {
         root.getChildren().addAll(sticks);
         root.getChildren().addAll(surface);
 
-        // Tymczasowe
-        addBall(root, 1, 1, 0, Color.RED);
-        addBall(root, 0, 1, 0, Color.BLUE);
-        addBall(root, 0, 1, 1, Color.BLUE);
-
         // Use a SubScene
         SubScene subScene = new SubScene(root, 800, 500, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.ALICEBLUE);
@@ -104,6 +140,7 @@ public class Main extends Application {
             yCameraAngle = yCameraRotate.getAngle();
             xCameraAngle = xCameraRotate.getAngle();
         });
+
         subScene.setOnMouseReleased(event -> {
             yCameraAngle = yCameraRotate.getAngle();
             xCameraAngle = xCameraRotate.getAngle();
@@ -125,6 +162,7 @@ public class Main extends Application {
         group.getChildren().add(subScene);
         return new Scene(group);
     }
+  
     private Scene createStartMenu() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("start_menu.fxml"));
 
@@ -201,5 +239,4 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }
