@@ -125,7 +125,6 @@ public class Main extends Application {
                 cameraTranslate);
 
         // Build the Scene Graph
-        Group root = new Group();
         root.getChildren().add(camera);
         root.getChildren().addAll(sticks);
         root.getChildren().addAll(surface);
