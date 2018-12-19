@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -9,6 +11,8 @@
     <padding><Insets left="20" right="20" /></padding>
     <center>
         <VBox alignment="CENTER" spacing="30">
+         <ChoiceBox fx:id="cbFirstColor" prefWidth="150.0" />
+         <ColorPicker fx:id="cp" />
             <Button fx:id="btnPvP" prefWidth="300" style="-fx-background-image: url(&quot;sample/icons/player.png&quot;);" styleClass="menuButton" text="Player vs Player" />
             <Button fx:id="btnPvAIEasy" prefWidth="300" style="-fx-background-image: url(&quot;sample/icons/ai.png&quot;);" styleClass="menuButton" text="Player vs AI (easy)" />
             <Button fx:id="btnPvAIHard" prefWidth="300" style="-fx-background-image: url(&quot;sample/icons/ai.png&quot;);" styleClass="menuButton" text="Player vs AI (hard)" />

@@ -1,8 +1,11 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Separator;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -97,6 +100,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("start_menu.fxml"));
         Scene scene = new Scene(root,400,600);
+        ChoiceBox cbFirst = (ChoiceBox) scene.lookup("#cbFirstColor");
+        cbFirst.setItems(FXCollections.observableArrayList(
+                "New Document", "Open ",
+                new Separator(), "Save", "Save as")
+        );
         //Scene scene = new Scene(createContent());
 
 //        scene.setOnMousePressed(event->{
