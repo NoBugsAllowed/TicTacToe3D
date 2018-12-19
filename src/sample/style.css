@@ -1,11 +1,11 @@
 *{
-    -fx-base: #248F61;
+        -fx-base: #248F61;
 }
 
 .menuLabel {
-                -fx-text-fill: #903b12;
-                -fx-font-weight: bold;
-                -fx-font-size: 14px;
+        -fx-text-fill: #903b12;
+        -fx-font-weight: bold;
+        -fx-font-size: 14px;
 }
 
 .menuButton {
