@@ -5,12 +5,37 @@ import javafx.scene.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +49,8 @@ public class Main extends Application {
     private static final Color COLOR_1 = Color.RED;
     private static final Color COLOR_2 = Color.AQUA;
     private Color currentColor = COLOR_1;
+    private Stage window;
+    public ComboBox cbFirstColor;
     private Rotate yCameraRotate;
     private Rotate xCameraRotate;
     private Translate cameraTranslate;
@@ -32,7 +59,15 @@ public class Main extends Application {
     private double yCameraAngle = 20;
     private double xCameraAngle = -30;
 
-    private Parent createContent() {
+    private void addBall(Group group, int i, int j, int k, Color color) {
+        Sphere ball = new Sphere(BALL_RADIUS);
+        ball.setMaterial(new PhongMaterial(color));
+        ball.setDrawMode(DrawMode.FILL);
+        ball.getTransforms().add(new Translate((i - 1) * STICK_DIST, -(k * 2 + 1) * BALL_RADIUS, (j - 1) * STICK_DIST));
+        group.getChildren().add(ball);
+    }
+
+    private Scene createGameArea() {
         // Sticks
         Group root = new Group();
         Cylinder[] sticks = new Cylinder[9];
@@ -72,15 +107,10 @@ public class Main extends Application {
                 sticks[(i+1)+(j+1)*3] = stick;
 
             }
-
-        //Sphere ball = new Sphere(BALL_RADIUS);
-        //ball.setMaterial(new PhongMaterial(Color.RED));
-        //ball.setDrawMode(DrawMode.FILL);
-        //ball.setTranslateY(-BALL_RADIUS);
-        //Sphere ball2 = new Sphere(BALL_RADIUS);
-        //ball2.setMaterial(new PhongMaterial(Color.BLUE));
-        //ball2.setDrawMode(DrawMode.FILL);
-        //ball2.setTranslateY(-3*BALL_RADIUS);
+      
+        Box surface = new Box(3 * STICK_DIST, 0.5, 3 * STICK_DIST);
+        surface.setMaterial(new PhongMaterial(Color.BROWN));
+        surface.setDrawMode(DrawMode.FILL);
 
         Translate pivot = new Translate();
         yCameraRotate = new Rotate(yCameraAngle, Rotate.Y_AXIS);
@@ -88,74 +118,124 @@ public class Main extends Application {
         cameraTranslate = new Translate(0, 0, -35);
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
-        camera.getTransforms().addAll (
+        camera.getTransforms().addAll(
                 pivot,
                 yCameraRotate,
                 xCameraRotate,
                 cameraTranslate);
 
         // Build the Scene Graph
-
+        Group root = new Group();
         root.getChildren().add(camera);
-        //root.getChildren().add(ball);
-        //root.getChildren().add(ball2);
         root.getChildren().addAll(sticks);
-
+        root.getChildren().addAll(surface);
 
         // Use a SubScene
-        SubScene subScene = new SubScene(root, 800,500, true, SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(root, 800, 500, true, SceneAntialiasing.BALANCED);
         subScene.setFill(Color.ALICEBLUE);
         subScene.setCamera(camera);
-
-        Group group = new Group();
-        group.getChildren().add(subScene);
-        return group;
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        Scene scene = new Scene(createContent());
-        primaryStage.setTitle("Tic Tac Toe");
-
-        scene.setOnMousePressed(event->{
+        subScene.setOnMousePressed(event -> {
             lastMouseX = event.getSceneX();
             lastMouseY = event.getSceneY();
             yCameraAngle = yCameraRotate.getAngle();
             xCameraAngle = xCameraRotate.getAngle();
         });
-        scene.setOnMouseReleased(event->{
+
+        subScene.setOnMouseReleased(event -> {
             yCameraAngle = yCameraRotate.getAngle();
             xCameraAngle = xCameraRotate.getAngle();
         });
-        scene.setOnMouseDragged(event->{
-            double dx = (event.getSceneX()-lastMouseX)*180/scene.getWidth();
-            double dy = (event.getSceneY()-lastMouseY)*70/scene.getHeight();
+        subScene.setOnMouseDragged(event -> {
+            double dx = (event.getSceneX() - lastMouseX) * 180 / subScene.getWidth();
+            double dy = (event.getSceneY() - lastMouseY) * 70 / subScene.getHeight();
             yCameraRotate.setAngle(yCameraAngle + dx);
             xCameraRotate.setAngle(xCameraAngle - dy);
         });
-        scene.setOnScroll(event->{
-            if(event.getDeltaY()>0)
-                cameraTranslate.setZ(cameraTranslate.getZ()+1);
+        subScene.setOnScroll(event -> {
+            if (event.getDeltaY() > 0)
+                cameraTranslate.setZ(cameraTranslate.getZ() + 1);
             else
-                cameraTranslate.setZ(cameraTranslate.getZ()-1);
+                cameraTranslate.setZ(cameraTranslate.getZ() - 1);
         });
-        scene.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode()== KeyCode.S)
-                for(int i=0; i<27; i++) {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
-                }
+        Group group = new Group();
+        group.getChildren().add(subScene);
+        return new Scene(group);
+    }
+  
+    private Scene createStartMenu() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("start_menu.fxml"));
+
+        // Prepare comboBoxes for chosing colors
+        List<Color> colorList = Arrays.asList(Color.BLUE, Color.RED, Color.WHITE);
+
+        ComboBox<Color> cbFirst = (ComboBox<Color>) root.lookup("#cbFirstColor");
+        ComboBox<Color> cbSecond = (ComboBox<Color>) root.lookup("#cbSecondColor");
+        Callback<ListView<Color>, ListCell<Color>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<Color> call(ListView<Color> l) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Color item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setStyle("-fx-background-color: #" + item.toString().substring(2, 8));
+                        }
+                    }
+                };
+            }
+        };
+        cbFirst.setItems(FXCollections.observableArrayList(colorList));
+        cbFirst.setButtonCell(cellFactory.call(null));
+        cbFirst.setCellFactory(cellFactory);
+        cbFirst.valueProperty().addListener((ov, oldCol, newCol) -> {
+            if (newCol == cbSecond.getSelectionModel().getSelectedItem()) {
+                cbSecond.getSelectionModel().select(oldCol);
+            }
         });
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        cbSecond.setItems(FXCollections.observableArrayList(colorList));
+        cbSecond.setButtonCell(cellFactory.call(null));
+        cbSecond.setCellFactory(cellFactory);
+        cbSecond.valueProperty().addListener((ov, oldCol, newCol) -> {
+            if (newCol == cbFirst.getSelectionModel().getSelectedItem()) {
+                cbFirst.getSelectionModel().select(oldCol);
+            }
+        });
+        cbFirst.getSelectionModel().select(0);
+        cbSecond.getSelectionModel().select(1);
+
+        // Add handlers to buttons
+        Button btnPvP = (Button) root.lookup("#btnPvP");
+        btnPvP.setOnAction(e -> switchScene(createGameArea()));
+
+        return new Scene(root,400,600);
     }
 
+    public void switchScene(Scene scene) {
+        window.setScene(scene);
+        centerStage(window);
+    }
 
+    public void centerStage(Stage stage) {
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        window = primaryStage;
+
+        primaryStage.setTitle("Tic Tac Toe");
+        primaryStage.setMinWidth(320);
+        primaryStage.setMinHeight(400);
+        primaryStage.setResizable(false);
+        primaryStage.setScene(createStartMenu());
+
+        primaryStage.show();
+    }
     public static void main(String[] args) {
         launch(args);
     }
