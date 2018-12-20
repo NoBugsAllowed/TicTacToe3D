@@ -46,9 +46,9 @@ public class Main extends Application {
     private static final double STICK_H = 6;
     private static final double STICK_DIST = 4;
     private static final double BALL_RADIUS = 1;
-    private static final Color COLOR_1 = Color.RED;
-    private static final Color COLOR_2 = Color.AQUA;
-    private Color currentColor = COLOR_1;
+    private Color COLOR_1;
+    private Color COLOR_2;
+    private Color currentColor;
     private Stage window;
     public ComboBox cbFirstColor;
     private Rotate yCameraRotate;
@@ -207,7 +207,12 @@ public class Main extends Application {
 
         // Add handlers to buttons
         Button btnPvP = (Button) root.lookup("#btnPvP");
-        btnPvP.setOnAction(e -> switchScene(createGameArea()));
+        btnPvP.setOnAction(e -> {
+            COLOR_1 = cbFirst.getSelectionModel().getSelectedItem();
+            COLOR_2 = cbSecond.getSelectionModel().getSelectedItem();
+            currentColor = COLOR_1;
+            switchScene(createGameArea());
+        });
 
         return new Scene(root,400,600);
     }
