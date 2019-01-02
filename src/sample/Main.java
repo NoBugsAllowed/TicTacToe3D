@@ -14,8 +14,10 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -77,6 +79,16 @@ public class Main extends Application {
                     balls[count[k] * 9 + k] = ball;
                     root.getChildren().add(ball);
                     count[k]++;
+
+                    if(count[k]==3)
+                    {
+                        try {
+                            displayMenu(0);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     currentColor = currentColor == COLOR_1 ? COLOR_2 : COLOR_1;
                 });
                 sticks[(i + 1) + (j + 1) * 3] = stick;
@@ -192,6 +204,45 @@ public class Main extends Application {
         });
 
         return new Scene(root, 400, 600);
+    }
+
+    private void displayMenu(int winner) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("game_menu.fxml"));
+        double centerXPosition = window.getX() + window.getWidth()/2d;
+        double centerYPosition = window.getY() + window.getHeight()/2d;
+
+        Button btnPlayAgain = (Button) root.lookup("#btnPlayAgain");
+        Button btnStartMenu = (Button) root.lookup("#btnStartMenu");
+        Button btnExit = (Button) root.lookup("#btnExit");
+
+        btnPlayAgain.setOnAction(e -> {
+            currentColor = COLOR_1;
+            switchScene(createGameArea());
+            ((Stage)((Button)e.getSource()).getScene().getWindow()).close();
+        });
+        btnStartMenu.setOnAction(e -> {
+            try {
+                switchScene(createStartMenu());
+                ((Stage)((Button)e.getSource()).getScene().getWindow()).close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        btnExit.setOnAction(e -> {
+            window.close();
+        });
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root,300,400));
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.setOnShown(ev -> {
+            stage.setX(centerXPosition - stage.getWidth()/2d);
+            stage.setY(centerYPosition - stage.getHeight()/2d);
+            stage.show();
+        });
+        stage.show();
     }
 
     private void switchScene(Scene scene) {
