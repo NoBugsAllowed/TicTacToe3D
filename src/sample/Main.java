@@ -36,7 +36,6 @@ public class Main extends Application {
     private Color COLOR_2;
     private Color currentColor;
     private Stage window;
-    public ComboBox cbFirstColor;
     private Rotate yCameraRotate;
     private Rotate xCameraRotate;
     private Translate cameraTranslate;
@@ -45,12 +44,33 @@ public class Main extends Application {
     private double yCameraAngle = 20;
     private double xCameraAngle = -30;
 
+    private boolean EndOfGame(int[] isPresent, int index) {
+        for (int i = -1; i < 2; i++)
+            for (int j = -1; j < 2; j++)
+                for (int k = -1; k < 2; k++) {
+                    if (i == 0 && j == 0 && k == 0) continue;
+                    Coords c1 = new Coords(index);
+                    Coords c2 = new Coords(c1.getX() + i, c1.getY() + j, c1.getZ() + k);
+                    Coords c3 = new Coords(c1.getX() + 2 * i, c1.getY() + 2 * j, c1.getZ() + 2 * k);
+                    if (!c2.isCorrect || !c3.isCorrect) continue;
+                    if (isPresent[index] == isPresent[c2.getIndex()] && isPresent[c2.getIndex()] == isPresent[c3.getIndex()])
+                        return true;
+                    c3 = new Coords(c1.getX() - i, c1.getY() - j, c1.getZ() - k);
+                    if (!c3.isCorrect) continue;
+                    if (isPresent[index] == isPresent[c2.getIndex()] && isPresent[c2.getIndex()] == isPresent[c3.getIndex()])
+                        return true;
+                }
+        return false;
+    }
+
     private Scene createGameArea() {
         // Sticks
         Group root = new Group();
         Cylinder[] sticks = new Cylinder[9];
         int[] count = new int[9];
-        Sphere[] balls = new Sphere[27];
+        int[] isPresent = new int[27];
+        Arrays.fill(isPresent, 0);
+        //Sphere[] balls = new Sphere[27];
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++) {
                 Cylinder stick = new Cylinder(STICK_RADIUS, STICK_H);
@@ -76,18 +96,19 @@ public class Main extends Application {
                     ball.setTranslateX(stick.getTranslateX());
                     ball.setTranslateZ(stick.getTranslateZ());
                     ball.setTranslateY(y);
-                    balls[count[k] * 9 + k] = ball;
+                    //balls[count[k]*9 + k] = ball;
+                    isPresent[count[k] * 9 + k] = currentColor == COLOR_1 ? 1 : 2;
                     root.getChildren().add(ball);
-                    count[k]++;
-
-                    if(count[k]==3)
-                    {
+                    Coords c = new Coords(count[k] * 9 + k);
+                    if (EndOfGame(isPresent, count[k] * 9 + k)) {
+                        System.out.println("Gracz nr " + isPresent[count[k] * 9 + k] + " wygrywa");
                         try {
                             displayMenu(0);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
+                    count[k]++;
 
                     currentColor = currentColor == COLOR_1 ? COLOR_2 : COLOR_1;
                 });
@@ -135,7 +156,7 @@ public class Main extends Application {
             double dx = (event.getSceneX() - lastMouseX) * 180 / subScene.getWidth();
             double dy = (event.getSceneY() - lastMouseY) * 70 / subScene.getHeight();
             yCameraRotate.setAngle(yCameraAngle + dx);
-            if (xCameraAngle - dy < 0 && xCameraAngle - dy > - 90)
+            if (xCameraAngle - dy < 0 && xCameraAngle - dy > -90)
                 xCameraRotate.setAngle(xCameraAngle - dy);
         });
         subScene.setOnScroll(event -> {
@@ -208,8 +229,8 @@ public class Main extends Application {
 
     private void displayMenu(int winner) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("game_menu.fxml"));
-        double centerXPosition = window.getX() + window.getWidth()/2d;
-        double centerYPosition = window.getY() + window.getHeight()/2d;
+        double centerXPosition = window.getX() + window.getWidth() / 2d;
+        double centerYPosition = window.getY() + window.getHeight() / 2d;
 
         Button btnPlayAgain = (Button) root.lookup("#btnPlayAgain");
         Button btnStartMenu = (Button) root.lookup("#btnStartMenu");
@@ -218,12 +239,12 @@ public class Main extends Application {
         btnPlayAgain.setOnAction(e -> {
             currentColor = COLOR_1;
             switchScene(createGameArea());
-            ((Stage)((Button)e.getSource()).getScene().getWindow()).close();
+            ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         });
         btnStartMenu.setOnAction(e -> {
             try {
                 switchScene(createStartMenu());
-                ((Stage)((Button)e.getSource()).getScene().getWindow()).close();
+                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -233,13 +254,13 @@ public class Main extends Application {
         });
 
         Stage stage = new Stage();
-        stage.setScene(new Scene(root,300,400));
+        stage.setScene(new Scene(root, 300, 400));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(window);
         stage.setOnShown(ev -> {
-            stage.setX(centerXPosition - stage.getWidth()/2d);
-            stage.setY(centerYPosition - stage.getHeight()/2d);
+            stage.setX(centerXPosition - stage.getWidth() / 2d);
+            stage.setY(centerYPosition - stage.getHeight() / 2d);
             stage.show();
         });
         stage.show();
