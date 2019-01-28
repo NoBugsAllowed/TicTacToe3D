@@ -1,21 +1,22 @@
 package sample;
 
 public class Coords {
-    int x;
-    int y;
-    int z;
+    private static final int N = 4;
+    private int x;
+    private int y;
+    private int z;
     boolean isCorrect = true;
 
     public Coords(int i) {
-        x = (i%9)/3;
-        y = i%3;
-        z = i/9;
+        x = (i%(N*N))/N;
+        y = i%N;
+        z = i/(N*N);
     }
     public Coords(int x, int y, int z){
         this.x = x;
         this.y = y;
         this.z = z;
-        if(x<0||x>2 ||y<0||y>2||z<0||z>2) isCorrect=false;
+        if(x<0||x>N-1 ||y<0||y>N-1||z<0||z>N-1) isCorrect=false;
     }
 
     public int getX() {
@@ -30,6 +31,6 @@ public class Coords {
         return z;
     }
     public int getIndex(){
-        return y + 3*x + 9*z;
+        return y + N*x + N*N*z;
     }
 }
