@@ -1,6 +1,9 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -235,30 +238,26 @@ public class Main extends Application {
             } else if (cameraTranslate.getZ() > -MAX_CAMERA_DIST)
                 cameraTranslate.setZ(cameraTranslate.getZ() - 1);
         });
-        window.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
-            if (KeyCode.ESCAPE == event.getCode()) {
-                try {
-                    displayMenu(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        window.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+//            if (KeyCode.ESCAPE == event.getCode()) {
+//                try {
+//                    displayMenu(0);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+        window.addEventHandler(KeyEvent.KEY_RELEASED,escPressedHandler);
         anchorPane.getChildren().add(subScene);
 
         gameFinishedInfo = new Label();
         gameFinishedInfo.setFont(Font.font ("Verdana", 20));
         gameFinishedInfo.setMinWidth(100);
-//        Text gameFinishedInfo = new Text();
-//        gameFinishedInfo.setText("This is a text sample");
-//        gameFinishedInfo.setFont(Font.font ("Verdana", 20));
-//        gameFinishedInfo.setFill(Color.RED);
+
         AnchorPane.setTopAnchor(gameFinishedInfo,10.0);
         AnchorPane.setLeftAnchor(gameFinishedInfo,20.0);
         anchorPane.getChildren().add(gameFinishedInfo);
-        //Group group = new Group();
-        //group.getChildren().add(subScene);
-        //return new Scene(group);
+
         return scene;
     }
 
@@ -345,12 +344,14 @@ public class Main extends Application {
         btnPlayAgain.setOnAction(e -> {
             currentColor = COLOR_1;
             isGameFinished = false;
+            window.removeEventHandler(KeyEvent.KEY_RELEASED,escPressedHandler);
             switchScene(createGameArea());
             ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         });
         btnStartMenu.setOnAction(e -> {
             try {
                 isGameFinished = false;
+                window.removeEventHandler(KeyEvent.KEY_RELEASED,escPressedHandler);
                 switchScene(createStartMenu());
                 ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             } catch (IOException ex) {
@@ -389,6 +390,16 @@ public class Main extends Application {
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
         stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
     }
+
+    private EventHandler escPressedHandler = (EventHandler<KeyEvent>) event -> {
+        if (KeyCode.ESCAPE == event.getCode()) {
+            try {
+                displayMenu(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void start(Stage primaryStage) throws IOException {
